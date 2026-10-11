@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Attendance System</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ==============================
+       MOBILE OVERLAY (sidebar backdrop)
+  ================================= -->
+  <div id="sidebar-overlay" class="sidebar-overlay hidden"></div>
+
+  <!-- ==============================
+       SIDEBAR NAVIGATION
+  ================================= -->
+  <aside id="sidebar" class="sidebar">
+    <!-- Brand -->
+    <div class="sidebar__brand">
+      <div class="sidebar__logo">
+        <!-- Academic cap icon (SVG) -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path d="M12 14l9-5-9-5-9 5 9 5z"/>
+          <path d="M12 14l6.16-3.422A12.083 12.083 0 0112 21a12.083 12.083 0 01-6.16-10.422L12 14z"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="sidebar__app-name">Student Attendance</h1>
+        <p class="sidebar__app-sub">System</p>
+      </div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="sidebar__nav">
+      <button data-page="dashboard" class="nav-btn nav-active">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>
+        </svg>
+        Dashboard
+      </button>
+      <button data-page="students" class="nav-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path d="M17 20h5v-2a4 4 0 00-5.33-3.77M9 20H4v-2a4 4 0 015.33-3.77M15 7a4 4 0 11-8 0 4 4 0 018 0zm6 13v-2a4 4 0 00-3-3.87"/>
+        </svg>
+        Data Mahasiswa
+      </button>
+      <button data-page="attendance" class="nav-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+        </svg>
+        Catat Kehadiran
+      </button>
+      <button data-page="history" class="nav-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        Riwayat Kehadiran
+      </button>
+    </nav>
+
+    <!-- Sidebar Footer -->
+    <div class="sidebar__footer">
+      &copy; 2025 Student Attendance System
+    </div>
+  </aside>
+
+  <!-- ==============================
+       MAIN CONTENT WRAPPER
+  ================================= -->
+  <div class="main-content">
+
+    <!-- Top Header Bar -->
+    <header class="topbar">
+      <!-- Hamburger (mobile only) -->
+      <button id="menu-toggle" class="topbar__menu-btn" aria-label="Toggle menu">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+      <h2 id="page-title" class="topbar__title">Dashboard</h2>
+      <div id="current-date-display" class="topbar__date"></div>
+    </header>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- ==============================
+         PAGE: DASHBOARD
+    ================================= -->
+    <main id="page-dashboard" class="page-section">
+
+      <!-- Stat Cards Grid -->
+      <div class="stat-grid">
+        <div class="stat-card">
+          <p class="stat-card__label">Mahasiswa</p>
+          <p id="stat-total" class="stat-card__value stat-card__value--blue">0</p>
+          <p class="stat-card__sub">Terdaftar</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-card__label">Hadir</p>
+          <p id="stat-hadir" class="stat-card__value stat-card__value--green">0</p>
+          <p id="stat-date-label" class="stat-card__sub">Hari ini</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-card__label">Izin / Sakit</p>
+          <p id="stat-izin-sakit" class="stat-card__value stat-card__value--yellow">0</p>
+          <p id="stat-date-label2" class="stat-card__sub">Hari ini</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-card__label">Alpha</p>
+          <p id="stat-alpha" class="stat-card__value stat-card__value--red">0</p>
+          <p id="stat-date-label3" class="stat-card__sub">Hari ini</p>
+        </div>
+      </div>
+
+      <!-- Dashboard date filter -->
+      <div class="card">
+        <div class="form-inline">
+          <label for="dashboard-date" class="form-label">Filter tanggal:</label>
+          <input type="date" id="dashboard-date" class="form-input form-input--sm" />
+        </div>
+      </div>
+
+      <!-- Attendance Summary Table -->
+      <div class="card">
+        <h3 class="card__title">Ringkasan Kehadiran</h3>
+        <div id="dashboard-attendance-summary" class="table-scroll"></div>
+      </div>
+
+    </main>
+
+    <!-- ==============================
+         PAGE: STUDENTS
+    ================================= -->
+    <main id="page-students" class="page-section hidden">
+
+      <!-- Student Form Card -->
+      <div class="card">
+        <h3 id="student-form-title" class="card__title">Tambah Mahasiswa</h3>
+        <form id="student-form" class="student-form" novalidate>
+          <div class="form-group">
+            <label for="input-nim" class="form-label">NIM <span class="required">*</span></label>
+            <input type="text" id="input-nim" placeholder="Contoh: 123456789" maxlength="20" class="form-input" />
+            <p id="error-nim" class="form-error hidden"></p>
+          </div>
+          <div class="form-group">
+            <label for="input-name" class="form-label">Nama Lengkap <span class="required">*</span></label>
+            <input type="text" id="input-name" placeholder="Nama lengkap mahasiswa" maxlength="60" class="form-input" />
+            <p id="error-name" class="form-error hidden"></p>
+          </div>
+          <div class="form-group">
+            <label for="input-prodi" class="form-label">Program Studi <span class="required">*</span></label>
+            <input type="text" id="input-prodi" placeholder="Contoh: Teknik Informatika" maxlength="60" class="form-input" />
+            <p id="error-prodi" class="form-error hidden"></p>
+          </div>
+          <input type="hidden" id="edit-index" value="" />
+          <div class="form-actions">
+            <button type="submit" id="btn-submit-student" class="btn btn--primary">Simpan</button>
+            <button type="button" id="btn-cancel-edit" class="btn btn--secondary hidden">Batal</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Search & Student Table -->
+      <div class="card">
+        <div class="card__header">
+          <h3 class="card__title">Daftar Mahasiswa</h3>
+          <input type="text" id="search-students" placeholder="Cari NIM atau nama..."
+            class="form-input form-input--search" />
+        </div>
+        <div id="student-table-container" class="table-scroll"></div>
+      </div>
+
+    </main>
+
+    <!-- ==============================
+         PAGE: ATTENDANCE
+    ================================= -->
+    <main id="page-attendance" class="page-section hidden">
+      <div class="card">
+        <div class="attendance-controls">
+          <div class="form-group">
+            <label for="attendance-date" class="form-label">Tanggal Kehadiran <span class="required">*</span></label>
+            <input type="date" id="attendance-date" class="form-input" />
+          </div>
+          <button id="btn-load-attendance" class="btn btn--primary attendance-controls__load-btn">
+            Muat Data
+          </button>
+        </div>
+        <div id="attendance-list-container"></div>
+        <div id="btn-save-attendance-wrapper" class="save-attendance-wrapper hidden">
+          <button id="btn-save-attendance" class="btn btn--success">Simpan Kehadiran</button>
+        </div>
+      </div>
+    </main>
+
+    <!-- ==============================
+         PAGE: HISTORY
+    ================================= -->
+    <main id="page-history" class="page-section hidden">
+      <div class="card">
+        <h3 class="card__title">Filter Riwayat</h3>
+        <div class="filter-bar">
+          <div class="form-group">
+            <label for="history-date-filter" class="form-label">Tanggal</label>
+            <input type="date" id="history-date-filter" class="form-input form-input--sm" />
+          </div>
+          <div class="form-group">
+            <label for="history-status-filter" class="form-label">Status</label>
+            <select id="history-status-filter" class="form-input form-input--sm form-select">
+              <option value="">Semua Status</option>
+              <option value="Hadir">Hadir</option>
+              <option value="Izin">Izin</option>
+              <option value="Sakit">Sakit</option>
+              <option value="Alpha">Alpha</option>
+            </select>
+          </div>
+          <div class="filter-bar__action">
+            <button id="btn-reset-history-filter" class="btn btn--secondary">Reset</button>
+          </div>
+        </div>
+        <div id="history-table-container" class="table-scroll"></div>
+      </div>
+    </main>
+
+  </div><!-- end .main-content -->
+
+  <!-- Modal: Delete Confirmation -->
+  <div id="modal-confirm" class="modal hidden">
+    <div class="modal__dialog">
+      <h4 class="modal__title">Konfirmasi Hapus</h4>
+      <p id="modal-confirm-text" class="modal__body">Apakah Anda yakin ingin menghapus data ini?</p>
+      <div class="modal__actions">
+        <button id="modal-cancel" class="btn btn--secondary">Batal</button>
+        <button id="modal-confirm-btn" class="btn btn--danger">Hapus</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+PRODUCT REQUIREMENTS DOCUMENT (PRD)
+Student Attendance System
+
+1. Project Overview
+Student Attendance System adalah aplikasi berbasis web untuk membantu pengelolaan data mahasiswa dan pencatatan kehadiran secara digital. Aplikasi ini dikembangkan menggunakan HTML5, CSS3, dan Vanilla JavaScript tanpa framework, dengan localStorage sebagai media penyimpanan data pada browser.
+
+2. Problem Statement
+Pencatatan kehadiran mahasiswa secara manual berpotensi menimbulkan kesalahan pencatatan, kesulitan dalam pencarian riwayat kehadiran, serta proses rekapitulasi yang membutuhkan waktu. Dibutuhkan aplikasi sederhana yang dapat membantu mengelola data mahasiswa dan kehadiran secara lebih terstruktur.
+
+3. Target Users
+- Dosen yang mencatat kehadiran mahasiswa.
+- Staf administrasi akademik.
+- Petugas yang bertanggung jawab mengelola data mahasiswa dan kehadiran.
+
+4. Project Objectives
+- Mempermudah pengelolaan data mahasiswa.
+- Mempermudah pencatatan dan pembaruan status kehadiran.
+- Menyediakan riwayat kehadiran berdasarkan tanggal.
+- Menampilkan ringkasan kehadiran secara otomatis.
+- Menyimpan data agar tetap tersedia setelah halaman dimuat ulang pada browser yang sama.
+
+5. Functional Requirements
+
+FR-01: Dashboard
+- Menampilkan jumlah mahasiswa terdaftar.
+- Menampilkan jumlah mahasiswa dengan status Hadir, Izin, Sakit, dan Alpha berdasarkan tanggal yang dipilih.
+- Memperbarui ringkasan ketika tanggal atau data kehadiran berubah.
+
+FR-02: Manajemen Data Mahasiswa
+- Menambahkan data mahasiswa berupa NIM, nama lengkap, dan program studi.
+- Menampilkan data mahasiswa dalam tabel.
+- Mengedit data mahasiswa.
+- Menghapus data mahasiswa dengan konfirmasi.
+- Mencari mahasiswa berdasarkan NIM atau nama.
+- Mencegah penggunaan NIM duplikat.
+
+FR-03: Pencatatan Kehadiran
+- Memilih tanggal pencatatan.
+- Menampilkan daftar mahasiswa terdaftar.
+- Menentukan status Hadir, Izin, Sakit, atau Alpha.
+- Menyimpan dan memperbarui data kehadiran.
+- Mengizinkan pencatatan untuk tanggal sebelumnya.
+- Mencegah duplikasi catatan untuk mahasiswa yang sama pada tanggal yang sama.
+
+FR-04: Riwayat Kehadiran
+- Menampilkan riwayat berdasarkan tanggal.
+- Memfilter data berdasarkan status kehadiran.
+- Menampilkan NIM, nama mahasiswa, tanggal, dan status kehadiran.
+- Memuat kembali data ketika tanggal sebelumnya dipilih.
+
+FR-05: Penyimpanan Data
+- Menggunakan localStorage untuk menyimpan data mahasiswa dan kehadiran.
+- Mempertahankan data setelah browser memuat ulang halaman.
+- Menangani kondisi ketika belum ada data tersimpan.
+
+FR-06: Navigasi
+- Menyediakan menu Dashboard, Data Mahasiswa, Catat Kehadiran, dan Riwayat Kehadiran.
+- Menyediakan tombol hamburger untuk membuka dan menutup sidebar pada perangkat mobile.
+- Menutup sidebar setelah menu navigasi dipilih pada perangkat mobile.
+
+6. Non-Functional Requirements
+- Menggunakan HTML5, CSS3 murni, dan Vanilla JavaScript.
+- Tidak menggunakan Tailwind CSS, Bootstrap, framework JavaScript, atau CDN eksternal.
+- Memisahkan kode menjadi `index.html`, `style.css`, dan `script.js`.
+- Memiliki tampilan modern, minimalis, profesional, dan responsif.
+- Menggunakan navigasi dan formulir yang mudah dipahami.
+- Memvalidasi input pengguna.
+- Menghindari error JavaScript dan fungsi yang tidak berjalan.
+- Menjaga konsistensi data mahasiswa dan kehadiran.
+
+7. Technical Requirements
+- Frontend: HTML5, CSS3, Vanilla JavaScript.
+- Penyimpanan: Browser localStorage.
+- Struktur project:
+
+```text
+student-attendance-system/
+├── index.html
+├── style.css
+└── script.js
+```
+
+- Aplikasi dapat dijalankan secara lokal melalui browser.
+- Tidak memerlukan backend atau database eksternal.
+
+8. Acceptance Criteria
+Project dinyatakan memenuhi kebutuhan apabila:
+1. Pengguna dapat menambah, melihat, mengedit, dan menghapus data mahasiswa.
+2. Sistem mencegah NIM duplikat.
+3. Pengguna dapat mencatat kehadiran dengan empat status yang tersedia.
+4. Pengguna dapat memilih tanggal sebelumnya dan melihat data yang sesuai.
+5. Riwayat kehadiran dapat difilter berdasarkan tanggal dan status.
+6. Dashboard menampilkan jumlah kehadiran yang sesuai dengan data.
+7. Data tetap tersimpan setelah halaman dimuat ulang.
+8. Tombol hamburger dapat membuka dan menutup sidebar pada perangkat mobile.
+9. Seluruh fitur utama dapat diuji tanpa error yang mengganggu.
+10. Website dapat digunakan pada desktop dan perangkat mobile.
+
+9. Project Scope
+Project ini berfokus pada pengelolaan data mahasiswa dan pencatatan kehadiran sederhana. Fitur login, manajemen hak akses, integrasi API, database server, dan notifikasi otomatis tidak termasuk dalam ruang lingkup versi awal.
+
+10. Testing Plan
+Pengujian dilakukan dengan menguji setiap fitur secara langsung, termasuk operasi CRUD, validasi input, pencatatan kehadiran, pemilihan tanggal, filter riwayat, persistensi localStorage, dan navigasi mobile. Hasil pengujian dicatat berdasarkan kondisi yang diharapkan dan hasil aktual.

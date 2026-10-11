@@ -1,0 +1,953 @@
+/* ============================================================
+   style.css — Student Attendance System
+   Pure CSS3 — no framework, no CDN dependencies.
+   Layout: CSS Grid + Flexbox, mobile-first.
+   ============================================================ */
+
+/* ============================================================
+   1. CSS CUSTOM PROPERTIES (Design Tokens)
+   ============================================================ */
+:root {
+  /* Colors */
+  --color-primary:       #1d6fce;
+  --color-primary-dark:  #1558a8;
+  --color-primary-light: #e8f1fb;
+  --color-success:       #16a34a;
+  --color-success-bg:    #dcfce7;
+  --color-warning:       #854d0e;
+  --color-warning-bg:    #fef9c3;
+  --color-orange:        #9a3412;
+  --color-orange-bg:     #ffedd5;
+  --color-danger:        #dc2626;
+  --color-danger-bg:     #fee2e2;
+  --color-sidebar-bg:    #1a5fad;
+  --color-sidebar-dark:  #154e96;
+  --color-sidebar-text:  rgba(255,255,255,0.78);
+  --color-sidebar-active-bg: rgba(255,255,255,0.16);
+
+  /* Neutral */
+  --color-bg:            #f1f5f9;
+  --color-surface:       #ffffff;
+  --color-border:        #e2e8f0;
+  --color-border-light:  #f1f5f9;
+  --color-text:          #1e293b;
+  --color-text-secondary:#475569;
+  --color-text-muted:    #94a3b8;
+
+  /* Typography */
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                 "Helvetica Neue", Arial, sans-serif;
+  --font-size-xs:   0.70rem;
+  --font-size-sm:   0.8125rem;
+  --font-size-base: 0.9375rem;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+
+  /* Sidebar */
+  --sidebar-width: 256px;
+
+  /* Radius */
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  14px;
+  --radius-pill: 9999px;
+
+  /* Shadow */
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:  0 4px 12px rgba(0,0,0,0.10);
+  --shadow-lg:  0 8px 30px rgba(0,0,0,0.14);
+}
+
+/* ============================================================
+   2. RESET & BASE
+   ============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.3;
+  font-weight: 600;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+input, select, textarea {
+  font-family: inherit;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--color-border-light); }
+::-webkit-scrollbar-thumb { background: var(--color-text-muted); border-radius: 3px; }
+
+/* Utility: hidden */
+.hidden { display: none !important; }
+
+/* ============================================================
+   3. LAYOUT — Sidebar + Main content (CSS Grid)
+   ============================================================ */
+
+/* Sidebar (fixed, off-canvas on mobile) */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--sidebar-width);
+  height: 100%;
+  background-color: var(--color-sidebar-bg);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  z-index: 300;
+  box-shadow: var(--shadow-lg);
+  transform: translateX(-100%);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+/* Sidebar visible on desktop */
+@media (min-width: 1024px) {
+  .sidebar {
+    transform: translateX(0);
+  }
+}
+
+/* Sidebar open state (toggled by JS on mobile) */
+.sidebar--open {
+  transform: translateX(0);
+}
+
+/* Sidebar mobile overlay */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.42);
+  z-index: 200;
+  transition: opacity 0.28s ease;
+}
+
+/* Main content shifted on desktop */
+.main-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+@media (min-width: 1024px) {
+  .main-content {
+    margin-left: var(--sidebar-width);
+  }
+}
+
+/* ============================================================
+   4. SIDEBAR INTERNALS
+   ============================================================ */
+.sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 20px var(--space-6);
+  border-bottom: 1px solid var(--color-sidebar-dark);
+  flex-shrink: 0;
+}
+
+.sidebar__logo {
+  width: 38px;
+  height: 38px;
+  background-color: rgba(255, 255, 255, 0.18);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sidebar__app-name {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.sidebar__app-sub {
+  font-size: var(--font-size-xs);
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 1px;
+}
+
+.sidebar__nav {
+  flex: 1;
+  padding: var(--space-3) var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+}
+
+.nav-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 10px var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-sidebar-text);
+  text-align: left;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.nav-btn:hover {
+  background-color: rgba(255, 255, 255, 0.10);
+  color: #fff;
+}
+
+.nav-btn.nav-active {
+  background-color: var(--color-sidebar-active-bg);
+  color: #fff;
+  font-weight: 600;
+}
+
+.nav-btn svg {
+  flex-shrink: 0;
+}
+
+.sidebar__footer {
+  padding: var(--space-4) var(--space-6);
+  border-top: 1px solid var(--color-sidebar-dark);
+  font-size: var(--font-size-xs);
+  color: rgba(255, 255, 255, 0.45);
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   5. TOP HEADER BAR
+   ============================================================ */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  padding: 12px var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+}
+
+.topbar__menu-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  transition: background-color 0.15s ease;
+  flex-shrink: 0;
+}
+
+.topbar__menu-btn:hover {
+  background-color: var(--color-border-light);
+}
+
+/* Hide hamburger on desktop */
+@media (min-width: 1024px) {
+  .topbar__menu-btn {
+    display: none;
+  }
+}
+
+.topbar__title {
+  flex: 1;
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.topbar__date {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .topbar__date { display: block; }
+}
+
+/* ============================================================
+   6. PAGE SECTIONS
+   ============================================================ */
+.page-section {
+  flex: 1;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  animation: fadeIn 0.18s ease;
+}
+
+@media (min-width: 640px) {
+  .page-section {
+    padding: var(--space-6);
+    gap: var(--space-6);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   7. CARD
+   ============================================================ */
+.card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sm);
+}
+
+.card__title {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-4);
+}
+
+/* Card header row (title + search side by side) */
+.card__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.card__header .card__title {
+  margin-bottom: 0;
+}
+
+/* ============================================================
+   8. DASHBOARD STAT CARDS GRID
+   ============================================================ */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+}
+
+@media (min-width: 1024px) {
+  .stat-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.stat-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(29, 111, 206, 0.10);
+}
+
+.stat-card__label {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-card__value {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-top: 4px;
+  line-height: 1;
+}
+
+.stat-card__value--blue   { color: var(--color-primary); }
+.stat-card__value--green  { color: #22c55e; }
+.stat-card__value--yellow { color: #eab308; }
+.stat-card__value--red    { color: var(--color-danger); }
+
+.stat-card__sub {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+/* ============================================================
+   9. FORMS
+   ============================================================ */
+
+/* Inline row (label + input horizontally) */
+.form-inline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* Vertical form group */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-label {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.required {
+  color: var(--color-danger);
+}
+
+.form-input {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(29, 111, 206, 0.18);
+}
+
+.form-input--sm {
+  width: auto;
+  min-width: 160px;
+  padding: 6px 10px;
+}
+
+.form-input--search {
+  width: 100%;
+  max-width: 280px;
+}
+
+@media (max-width: 639px) {
+  .form-input--search {
+    max-width: 100%;
+  }
+}
+
+.form-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 30px;
+  cursor: pointer;
+}
+
+.form-error {
+  font-size: var(--font-size-xs);
+  color: var(--color-danger);
+  margin-top: 2px;
+}
+
+/* Student form 3-column grid on wider screens */
+.student-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+@media (min-width: 640px) {
+  .student-form {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  /* Form actions span full width */
+  .student-form .form-actions {
+    grid-column: 1 / -1;
+  }
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+/* ============================================================
+   10. BUTTONS
+   ============================================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 8px 20px;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: background-color 0.15s ease, border-color 0.15s ease,
+              color 0.15s ease, transform 0.1s ease;
+  white-space: nowrap;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+/* Primary */
+.btn--primary {
+  background-color: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+}
+.btn--primary:hover {
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+}
+
+/* Secondary (ghost) */
+.btn--secondary {
+  background-color: var(--color-border-light);
+  color: var(--color-text-secondary);
+  border-color: var(--color-border);
+}
+.btn--secondary:hover {
+  background-color: var(--color-border);
+}
+
+/* Success */
+.btn--success {
+  background-color: var(--color-success);
+  color: #fff;
+  border-color: var(--color-success);
+}
+.btn--success:hover {
+  background-color: #15803d;
+  border-color: #15803d;
+}
+
+/* Danger */
+.btn--danger {
+  background-color: var(--color-danger);
+  color: #fff;
+  border-color: var(--color-danger);
+}
+.btn--danger:hover {
+  background-color: #b91c1c;
+  border-color: #b91c1c;
+}
+
+/* Small inline action buttons (inside tables) */
+.btn-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  border: 1px solid #bfdbfe;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+.btn-edit:hover {
+  background-color: #dbeafe;
+  border-color: #93c5fd;
+}
+
+.btn-delete {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  background-color: #fff1f2;
+  color: var(--color-danger);
+  border: 1px solid #fecaca;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+.btn-delete:hover {
+  background-color: var(--color-danger-bg);
+  border-color: #f87171;
+}
+
+/* ============================================================
+   11. TABLES
+   ============================================================ */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.data-table thead th {
+  background-color: #f8fafc;
+  color: var(--color-text-muted);
+  font-weight: 700;
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 2px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.data-table tbody tr {
+  border-bottom: 1px solid var(--color-border-light);
+  transition: background-color 0.10s ease;
+}
+
+.data-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.data-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.data-table tbody td {
+  padding: 10px 14px;
+  color: var(--color-text);
+  vertical-align: middle;
+}
+
+/* Mono NIM cell */
+.data-table tbody td.cell-nim {
+  font-family: "Courier New", Courier, monospace;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+/* Index/number cell */
+.data-table tbody td.cell-index {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  width: 40px;
+}
+
+@media (max-width: 639px) {
+  .data-table thead th,
+  .data-table tbody td {
+    padding: 8px 10px;
+    font-size: var(--font-size-xs);
+  }
+}
+
+/* ============================================================
+   12. STATUS BADGES
+   ============================================================ */
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.badge-hadir { background-color: var(--color-success-bg);  color: var(--color-success); }
+.badge-izin  { background-color: var(--color-warning-bg);  color: var(--color-warning); }
+.badge-sakit { background-color: var(--color-orange-bg);   color: var(--color-orange); }
+.badge-alpha { background-color: var(--color-danger-bg);   color: var(--color-danger); }
+
+/* ============================================================
+   13. ATTENDANCE RECORDING LIST
+   ============================================================ */
+.attendance-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.attendance-row:last-child {
+  border-bottom: none;
+}
+
+.student-info {
+  flex: 1 1 180px;
+  min-width: 150px;
+}
+
+.student-info__name {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.student-info__nim {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-family: "Courier New", Courier, monospace;
+  margin-top: 1px;
+}
+
+.status-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* Status radio pill */
+.status-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 13px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--color-border);
+  cursor: pointer;
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  background-color: var(--color-surface);
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+  user-select: none;
+}
+
+.status-label:hover {
+  border-color: #93c5fd;
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+/* Hide the actual radio input visually */
+.status-label input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Checked pill states (toggled via JS) */
+.status-label.checked-hadir  { background-color: var(--color-success-bg); border-color: #4ade80; color: var(--color-success); }
+.status-label.checked-izin   { background-color: var(--color-warning-bg); border-color: #facc15; color: var(--color-warning); }
+.status-label.checked-sakit  { background-color: var(--color-orange-bg);  border-color: #fb923c; color: var(--color-orange); }
+.status-label.checked-alpha  { background-color: var(--color-danger-bg);  border-color: #f87171; color: var(--color-danger); }
+
+/* Attendance controls bar */
+.attendance-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.attendance-controls__load-btn {
+  margin-bottom: 1px; /* align with input */
+}
+
+.save-attendance-wrapper {
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border-light);
+}
+
+/* ============================================================
+   14. FILTER BAR (History page)
+   ============================================================ */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+.filter-bar__action {
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 1px;
+}
+
+/* ============================================================
+   15. EMPTY STATE
+   ============================================================ */
+.empty-state {
+  text-align: center;
+  padding: 48px var(--space-4);
+  color: var(--color-text-muted);
+}
+
+.empty-state svg {
+  display: block;
+  margin: 0 auto 12px;
+  opacity: 0.35;
+}
+
+.empty-state p {
+  font-size: var(--font-size-sm);
+}
+
+/* ============================================================
+   16. TOAST NOTIFICATIONS
+   ============================================================ */
+.toast-container {
+  position: fixed;
+  top: var(--space-4);
+  right: var(--space-4);
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  pointer-events: none;
+}
+
+.toast {
+  min-width: 240px;
+  max-width: 340px;
+  background-color: #1e293b;
+  color: #f1f5f9;
+  font-size: var(--font-size-sm);
+  padding: 12px var(--space-4);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: auto;
+  animation: toastIn 0.25s ease forwards;
+}
+
+.toast.toast-success { border-left: 4px solid #22c55e; }
+.toast.toast-error   { border-left: 4px solid #ef4444; }
+.toast.toast-info    { border-left: 4px solid #3b82f6; }
+.toast.toast-out     { animation: toastOut 0.25s ease forwards; }
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(36px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes toastOut {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(36px); }
+}
+
+/* ============================================================
+   17. MODAL — Delete Confirmation
+   ============================================================ */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  background-color: rgba(0, 0, 0, 0.44);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  animation: fadeIn 0.15s ease;
+}
+
+.modal__dialog {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-6);
+  width: 100%;
+  max-width: 400px;
+}
+
+.modal__title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-2);
+}
+
+.modal__body {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-5);
+  line-height: 1.5;
+}
+
+.modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+/* ============================================================
+   18. SUPPLEMENTARY — classes used in dynamic HTML (script.js)
+   ============================================================ */
+
+/* Table action button group (inside td) */
+.table-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Toast icon coloring */
+.toast__icon {
+  flex-shrink: 0;
+}
+.toast__icon--success { color: #4ade80; }
+.toast__icon--error   { color: #f87171; }
+.toast__icon--info    { color: #60a5fa; }
